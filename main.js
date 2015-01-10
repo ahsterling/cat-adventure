@@ -14,7 +14,7 @@ var Room = function (new_name, new_description, new_exits, new_points) {
 // Begin fixture data!
 //
 var kitchen = new Room(
-  "Kitchen", 
+  "Kitchen",
   "A nice roomy kitchen. Not very safe. There may be dogs nearby.",
   ["Living Room", "Dining Room"],
   0
@@ -51,6 +51,21 @@ var bedroom = new Room(
 $(document).ready(function(){
   // should be replaced with your beginning/end game logic
   // while (true) {
+  document.getElementById("run-dining-room").onclick = function() {
+    console.log("run dining room");
+
+  }
+
+  
+
+    $("#kitchen").click(function() {
+      alert( kitchen.getDescription() );
+    })
+
+    $("#bedroom").click(function() {
+      alert( kitchen.getDescription() );
+    })
+
     $("#dining-room").click(function() {
       alert( dining_room.getDescription() );
     });
