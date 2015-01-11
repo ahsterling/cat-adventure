@@ -1,7 +1,13 @@
 // Write a cat model HERE!
 
+var Cat = function(name, escape_points) {
+  this.name = name;
+  this.escape_points = escape_points
+}
+
 var Room = function (new_name, new_description, new_exits, new_points) {
   this.name = new_name;
+  this.label = new_name.toLowerCase().replace(" ", "-");
   this.description = new_description;
   this.exits = new_exits;
   this.points = new_points;
@@ -13,6 +19,9 @@ var Room = function (new_name, new_description, new_exits, new_points) {
 //
 // Begin fixture data!
 //
+
+var starbuck = new Cat("Starbuck", 5);
+
 var kitchen = new Room(
   "Kitchen",
   "A nice roomy kitchen. Not very safe. There may be dogs nearby.",
@@ -34,12 +43,57 @@ var dining_room = new Room(
   -4
 );
 
+
 var bedroom = new Room(
   "Bedroom",
   "YAY! We finally found the nice toasty warm sunbeam!",
   ["Stairs"],
   20
 );
+
+var roomClick = function(room) {
+  starbuck.escape_points = starbuck.escape_points + room.points;
+  document.getElementById("escape-points").innerHTML = "Starbuck has " + starbuck.escape_points + " escape points"
+  var runRoom = document.getElementById( "run-" + room.label );
+  var lookRoom = document.getElementById( "look-"+ room.label );
+  var currentLocation = document.getElementById("current-location");
+  currentLocation.innerHTML = "Oh no! Starbuck is trapped in the " + room.name;
+  var exits = room.exits
+  document.getElementById("dining-room").setAttribute("style", "display: none");
+  document.getElementById("living-room").setAttribute("style", "display: none");
+  document.getElementById("kitchen").setAttribute("style", "display: none");
+  document.getElementById("bedroom").setAttribute("style", "display: none");
+
+  for (var exit in exits ) {
+    roomLabel = exits[exit].toLowerCase().replace(" ", "-");
+    var newRoom = document.getElementById(roomLabel);
+    newRoom.setAttribute("style", "display: visible");
+  }
+}
+
+var build_room = function(room) {
+  console.log("building " + room.name + "...");
+  var options = document.getElementById("options");
+  console.log(options);
+  var roomElement = document.createElement("div");
+  roomElement.setAttribute("class", "room");
+  roomElement.setAttribute("id", room.label);
+  options.appendChild(roomElement);
+
+  var runElement = document.createElement("span");
+  runElement.setAttribute("class", "run");
+  runElement.setAttribute("id", "run-"+ room.label);
+  runElement.innerHTML = "Run towards the " + room.name + " ";
+
+  var lookElement = document.createElement("span");
+  lookElement.setAttribute("class", "look");
+  lookElement.setAttribute("id", "look-" + room.label);
+  lookElement.innerHTML = "Look at the " + room.name + " ";
+
+  roomElement.appendChild(runElement);
+  roomElement.appendChild(lookElement);
+
+}
 
 //
 // End fixture data!
@@ -50,95 +104,122 @@ var bedroom = new Room(
 
 $(document).ready(function(){
   // should be replaced with your beginning/end game logic
-  // while (true) {
+
+  build_room(bedroom);
+  build_room(kitchen);
+
+  var myDiningRoom = document.getElementById("dining-room");
+  var myLivingRoom = document.getElementById("living-room");
+  var myKitchen = document.getElementById("kitchen");
+  var myBedroom = document.getElementById("bedroom");
+
   var runDiningRoom = document.getElementById("run-dining-room");
-  runDiningRoom.onclick = function() {
-    var currentLocation = document.getElementById("current-location");
-    currentLocation.innerHTML = "Oh no! Starbuck is trapped in the dining room!"
-    console.log(dining_room.exits);
-    var room = runDiningRoom.parentElement;
-    var nextRoom = document.getElementsByClassName('room')[1];
-    // console.log("nextRoom is" + nextRoom);
-    room.removeChild(document.getElementById("run-dining-room"));
-    room.removeChild(document.getElementById("dining-room"));
-    nextRoom.removeChild(document.getElementById("run-living-room"));
-    nextRoom.removeChild(document.getElementById("living-room"));
-    // var rooms = room.children;
-    // console.log(rooms);
-    // for (var i in rooms) {
-    //   i.remove();
-    //   // console.log(room);
-    // };
-    var exits = dining_room.exits;
-    for (var exit in exits) {
-      console.log(room);
-      console.log(exit);
-      var runElement = document.createElement("span");
-      runElement.setAttribute("class", "run");
-      runElement.setAttribute("id", "run-"+ exits[exit] );
-      runElement.innerHTML = "Run towards the " + exits[exit] + " ";
-      console.log(runElement)
-      if ( exit == 0 ) {
-        room.appendChild(runElement);
-      } else {
-        nextRoom.appendChild(runElement);
+  var runLivingRoom = document.getElementById("run-living-room");
+  var runBedroom = document.getElementById("run-bedroom");
+  var runKitchen = document.getElementById("run-kitchen");
+
+  myKitchen.setAttribute("style", "display: none");
+  myBedroom.setAttribute("style", "display: none");
+
+  document.getElementById("escape-points").innerHTML = "Starbuck has " + starbuck.escape_points + " escape points"
+
+
+  var play = true;
+  var win = false;
+
+    runDiningRoom.onclick = function() {
+      roomClick(dining_room);
+      if (starbuck.escape_points < 0) {
+        alert("Starbuck ran out of escape points!  You lose.  Let's start again.")
+        starbuck.escape_points = 5;
+        myKitchen.setAttribute("style", "display: none");
+        myBedroom.setAttribute("style", "display: none");
+        myLivingRoom.setAttribute("style", "display: visible");
+        myDiningRoom.setAttribute("style", "display: visible");
+
+        var currentLocation = document.getElementById("current-location");
+        currentLocation.innerHTML = "Oh no! Starbuck is trapped in the kitchen!";
+        var escapePoints = document.getElementById("escape-points");
+        escapePoints.innerHTML = "Starbuck has " + starbuck.escape_points + " escape points"
+
+      }
+    };
+
+    runLivingRoom.onclick = function() {
+      roomClick(living_room);
+      if (starbuck.escape_points < 0) {
+        alert("Starbuck ran out of escape points!  You lose.  Let's start again.")
+        starbuck.escape_points = 5;
+        myKitchen.setAttribute("style", "display: none");
+        myBedroom.setAttribute("style", "display: none");
+        myLivingRoom.setAttribute("style", "display: visible");
+        myDiningRoom.setAttribute("style", "display: visible");
+
+        var currentLocation = document.getElementById("current-location");
+        currentLocation.innerHTML = "Oh no! Starbuck is trapped in the kitchen!";
+        var escapePoints = document.getElementById("escape-points");
+        escapePoints.innerHTML = "Starbuck has " + starbuck.escape_points + " escape points"
+
       }
 
-      var lookElement = document.createElement("span");
-      lookElement.setAttribute("class", "look");
-      lookElement.setAttribute("id", exits[exit]);
-      lookElement.innerHTML = "Look at the " + exits[exit] + " ";
-      if ( exit == 0 ) {
-        room.appendChild(lookElement);
-      } else {
-        nextRoom.appendChild(lookElement);
+    };
+
+    runBedroom.onclick = function() {
+      alert("win!  Let's start over :)");
+      starbuck.escape_points = 5;
+      myKitchen.setAttribute("style", "display: none");
+      myBedroom.setAttribute("style", "display: none");
+      myLivingRoom.setAttribute("style", "display: visible");
+      myDiningRoom.setAttribute("style", "display: visible");
+
+      var currentLocation = document.getElementById("current-location");
+      currentLocation.innerHTML = "Oh no! Starbuck is trapped in the kitchen!";
+      var escapePoints = document.getElementById("escape-points");
+      escapePoints.innerHTML = "Starbuck has " + starbuck.escape_points + " escape points"
+
+    };
+
+    runKitchen.onclick = function() {
+      roomClick(kitchen);
+      if (starbuck.escape_points < 0) {
+        alert("Starbuck ran out of escape points!  You lose.  Let's start again.")
+        starbuck.escape_points = 5;
+        myKitchen.setAttribute("style", "display: none");
+        myBedroom.setAttribute("style", "display: none");
+        myLivingRoom.setAttribute("style", "display: visible");
+        myDiningRoom.setAttribute("style", "display: visible");
+
+        var currentLocation = document.getElementById("current-location");
+        currentLocation.innerHTML = "Oh no! Starbuck is trapped in the kitchen!";
+        var escapePoints = document.getElementById("escape-points");
+        escapePoints.innerHTML = "Starbuck has " + starbuck.escape_points + " escape points"
+
       }
-      // room.appendChild("<span class='run' id='run-" + exit + "'>Run towards the dining room</span>");
-      // room.appendChild("<span class='look' id='" + exit + "'>Look at the " + exit + "</span>");
-    }
-    // for (var i = 0; i < new_rooms.length; i++) {
-    //   new_room = new_rooms[i];
-    //   room.removeChild(".run");
-    //   room.removeChild(".look");
-    //   room.appendChild("<span class='run' id='run-" + new_room[i] + "'>Run towards the dining room</span>");
-    //   room.appendChild("<span class='look' id='" + new_room[i] + "'>Look at the " + new_room[i] + "</span>");
-      // document.createElement("<span class='run' id='run-" + new_room[i] + "'>Run towards the dining room</span>")
-      // document.createElement("<span class='look' id='" + new_room[i] + "'>Look at the " + new_room[i] + "</span>")
 
-    // }
-
-  };
-
-  document.getElementById("run-living-room").onclick = function() {
-    console.log("run living room");
-  };
-
-  // document.getElementById("run-kitchen").onclick = function() {
-  //   console.log("run kitchen");
-  // }
-  //
-  // document.getElementById("run-dining-room").onclick = function() {
-  //   console.log("run bedroom");
-  // }
-
-
-
-
-    $("#kitchen").click(function() {
+    $("#look-kitchen").click(function() {
       alert( kitchen.getDescription() );
-    })
+    });
 
-    $("#bedroom").click(function() {
+    $("#look-bedroom").click(function() {
       alert( kitchen.getDescription() );
-    })
+    });
 
-    $("#dining-room").click(function() {
+    $("#look-living-room").click(function() {
+      alert( living_room.getDescription() );
+    });
+
+    $("#look-dining-room").click(function() {
       alert( dining_room.getDescription() );
     });
 
-    $("#living-room").click(function() {
-      alert( living_room.getDescription() );
-    });
-    // Add more!
-  // }
+  };
+
+  if ( (play == false) && ( win == true ) ) {
+    alert("You escape and win!");
+  } else if ( ( play == false ) && ( win == false ) ) {
+    alert("You lose!");
+  };
+
+
+
 });
