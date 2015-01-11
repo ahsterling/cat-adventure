@@ -73,12 +73,26 @@ $(document).ready(function(){
     for (var exit in exits) {
       console.log(room);
       console.log(exit);
-      var element = document.createElement("span");
-      element.setAttribute("class", "run");
-      element.setAttribute("id", "run-"+ exits[exit] );
-      element.innerHTML = "Run towards the " + exits[exit];
-      console.log(element)
-      room.appendChild(element);
+      var runElement = document.createElement("span");
+      runElement.setAttribute("class", "run");
+      runElement.setAttribute("id", "run-"+ exits[exit] );
+      runElement.innerHTML = "Run towards the " + exits[exit] + " ";
+      console.log(runElement)
+      if ( exit == 0 ) {
+        room.appendChild(runElement);
+      } else {
+        nextRoom.appendChild(runElement);
+      }
+
+      var lookElement = document.createElement("span");
+      lookElement.setAttribute("class", "look");
+      lookElement.setAttribute("id", exits[exit]);
+      lookElement.innerHTML = "Look at the " + exits[exit] + " ";
+      if ( exit == 0 ) {
+        room.appendChild(lookElement);
+      } else {
+        nextRoom.appendChild(lookElement);
+      }
       // room.appendChild("<span class='run' id='run-" + exit + "'>Run towards the dining room</span>");
       // room.appendChild("<span class='look' id='" + exit + "'>Look at the " + exit + "</span>");
     }
